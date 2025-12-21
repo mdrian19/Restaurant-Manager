@@ -1,18 +1,37 @@
-package org.example;
+package org.example.Entity;
 
+import jakarta.persistence.*;
+import jakarta.persistence.Transient;
 import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 
 import static javafx.collections.FXCollections.observableArrayList;
 import java.util.*;
 
+@Entity
+@DiscriminatorValue("PIZZA")
+@Access(AccessType.PROPERTY)
 public final class Pizza extends Food {
-    private final ObjectProperty<Builder.Dough> dough;
-    private final ObjectProperty<Builder.Sauce> sauce;
+    @Transient
+    private ObjectProperty<Builder.Dough> dough;
+    @Transient
+    private ObjectProperty<Builder.Sauce> sauce;
 
+    @Transient
     private final ListProperty<Builder.Topping> defaultToppings;
+    @Transient
     private final ListProperty<Builder.Topping> customToppings;
+    @Transient
     private final ListProperty<Builder.Topping> deletedToppings;
+
+    public Pizza(){
+        super();
+        this.dough = new SimpleObjectProperty<>();
+        this.sauce = new SimpleObjectProperty<>();
+        this.defaultToppings = new SimpleListProperty<>(observableArrayList());
+        this.customToppings = new SimpleListProperty<>(observableArrayList());
+        this.deletedToppings = new SimpleListProperty<>(observableArrayList());
+    }
 
     public Pizza(String name, double price, Category category, int weight, boolean isVegetarian,
                  Builder.Dough dough, Builder.Sauce sauce,
@@ -39,21 +58,36 @@ public final class Pizza extends Food {
         this.deletedToppings = new SimpleListProperty<>(observableArrayList());
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "dough")
     public Builder.Dough getDough() { return dough.get(); }
-    public void setDough(Builder.Dough dough) { this.dough.set(dough); }
+    public void setDough(Builder.Dough dough) { 
+        if (this.dough == null) this.dough = new SimpleObjectProperty<>();
+        this.dough.set(dough); }
+    @Transient
     public ObjectProperty<Builder.Dough> doughProperty() { return dough; }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "sauce")
     public Builder.Sauce getSauce() { return sauce.get(); }
-    public void setSauce(Builder.Sauce sauce) { this.sauce.set(sauce); }
+    public void setSauce(Builder.Sauce sauce) { 
+        if (this.sauce == null) this.sauce = new SimpleObjectProperty<>();
+        this.sauce.set(sauce); }
+    @Transient
     public ObjectProperty<Builder.Sauce> sauceProperty() { return sauce; }
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Column(name = "default_toppings")
     public ObservableList<Builder.Topping> getDefaultToppings() { return defaultToppings.get(); }
+    @Transient
     public ListProperty<Builder.Topping> defaultToppingsProperty() { return defaultToppings; }
 
     public ObservableList<Builder.Topping> getCustomToppings() { return customToppings.get(); }
+    @Transient
     public ListProperty<Builder.Topping> customToppingsProperty() { return customToppings; }
 
     public ObservableList<Builder.Topping> getDeletedToppings() { return deletedToppings.get(); }
+    @Transient
     public ListProperty<Builder.Topping> deletedToppingsProperty() { return deletedToppings; }
 
     public void setCustomToppings(Collection<Builder.Topping> toppings){

@@ -6,11 +6,15 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.*;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
+import javafx.scene.text.*;
 import javafx.stage.Stage;
 import javafx.util.converter.NumberStringConverter;
+import javafx.stage.FileChooser;
+import org.example.Entity.*;
 
 public class RestaurantApp extends Application {
     private TextField nameField;
@@ -18,11 +22,16 @@ public class RestaurantApp extends Application {
     private TextField categoryField;
     private TextArea detailsArea;
 
+    private Menu menu;
+    private Stage primaryStage;
     private Product selectedProduct = null;
+
+    private org.example.Menu restaurantMenu;
 
     @Override
     public void start(Stage primaryStage) {
-        Menu menu = new Menu();
+        this.primaryStage = primaryStage;
+        restaurantMenu = new org.example.Menu();
 
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(15));
@@ -32,7 +41,7 @@ public class RestaurantApp extends Application {
         listLabel.setFont(Font.font("Arial", FontWeight.BOLD, 16));
 
         ListView<Product> products = new ListView<>();
-        products.setItems(menu.getAllProductsObservable());
+        products.setItems(restaurantMenu.getAllProductsObservable());
 
         products.setCellFactory(param -> new ListCell<>() {
             @Override
@@ -87,10 +96,47 @@ public class RestaurantApp extends Application {
             }
         });
 
+        MenuBar menuBar = new MenuBar();
+        Menu fileMenu = new Menu();
+
+        MenuItem exportItem = new MenuItem("Export to JSON");
+        exportItem.setOnAction(e -> exportToJson());
+
+        MenuItem importItem = new MenuItem("Import from JSON");
+        importItem.setOnAction(e -> importFromJson());
+
+        fileMenu.getItems().addAll(exportItem, importItem);
+        menuBar.getMenus().add(fileMenu);
+        root.setTop(menuBar);
+
         Scene scene = new Scene(root, 1000, 650);
         primaryStage.setTitle("Restaurant \"La Andrei\"");
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    private void exportToJson() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save menu to JSON");
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("JSON Files", "*.json")
+        );
+        var selectedFile = fileChooser.showSaveDialog(primaryStage);
+        if (selectedFile != null) {
+            restaurantMenu.exportDataToJSON(selectedFile);
+        }
+    }
+
+    private void importFromJson() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Import Menu from JSON");
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("JSON Files", "*.json")
+        );
+        var selectedFile = fileChooser.showOpenDialog(primaryStage);
+        if (selectedFile != null) {
+            restaurantMenu.importDataFromJSON(selectedFile);
+        }
     }
 
     private void bindingProcedure(Product product) {
@@ -127,7 +173,7 @@ public class RestaurantApp extends Application {
             sb.append("Topping-uri: ").append(pizza.getCustomToppings());
         } else if (p instanceof Food food) {
             sb.append("Gramaj: ").append(food.getWeight()).append("g\n");
-            sb.append("Vegetarian: ").append(food.isVegetarian() ? "Da" : "Nu");
+            sb.append("Vegetarian: ").append(food.getVegetarian() ? "Da" : "Nu");
         } else if (p instanceof Drink drink) {
             sb.append("Volum: ").append(drink.getVolume()).append("ml");
         }
