@@ -1,0 +1,119 @@
+{
+    "products": [
+    {
+      "type": "Drink",
+      "name": "Limonada",
+      "price": 8.0,
+      "category": "SOFT_DRINK",
+      "capacity": 500
+    },
+    {
+      "type": "Drink",
+      "name": "Apa Plata",
+      "price": 5.0,
+      "category": "SOFT_DRINK",
+      "capacity": 500
+    },
+    {
+      "type": "Food",
+      "name": "Paste Carbonara",
+      "price": 52.5,
+      "category": "MAIN_COURSE",
+      "grams": 400,
+      "vegetarian": false
+    },
+    {
+      "type": "Food",
+      "name": "Salata Caesar",
+      "price": 38.0,
+      "category": "APPETIZER",
+      "grams": 300,
+      "vegetarian": false
+    },
+    {
+      "type": "Pizza",
+      "name": "Pizza Margherita",
+      "price": 45.0,
+      "category": "MAIN_COURSE",
+      "grams": 450,
+      "vegetarian": true,
+      "dough": "THIN_CRUST",
+      "sauce": "TOMATO",
+      "toppings": [
+            "EXTRA_MOZZARELLA",
+            "BASIL"
+        ]
+    },
+    {
+      "type": "Pizza",
+      "name": "Pizza Quattro Stagioni",
+      "price": 60.0,
+      "category": "MAIN_COURSE",
+      "grams": 55,
+      "vegetarian": false,
+      "dough": "THIN_CRUST",
+      "sauce": "TOMATO",
+      "toppings": [
+        "EXTRA_MOZZARELLA",
+        "HAM",
+        "SALAMI",
+        "MUSHROOMS",
+        "CORN",
+        "OLIVES"
+      ]
+    },
+    {
+      "type": "Drink",
+      "name": "Whisky",
+      "price": 25.0,
+      "category": "ALCOHOLIC_DRINK",
+      "capacity": 200
+    },
+    {
+      "type": "Drink",
+      "name": "Vin Rosu",
+      "price": 18.0,
+      "category": "ALCOHOLIC_DRINK",
+      "capacity": 250
+    },
+    {
+      "type": "Drink",
+      "name": "Bere Blonda",
+      "price": 10.0,
+      "category": "ALCOHOLIC_DRINK",
+      "capacity": 330
+    },
+    {
+      "type": "Food",
+      "name": "Tiramisu",
+      "price": 22.0,
+      "category": "DESSERT",
+      "grams": 150,
+      "vegetarian": true
+    },
+    {
+      "type": "Food",
+      "name": "Papanasi",
+      "price": 20.0,
+      "category": "DESSERT",
+      "grams": 200,
+      "vegetarian": true
+    },
+    {
+      "type": "Food",
+      "name": "Lava cake",
+      "price": 25.0,
+      "category": "DESSERT",
+      "grams": 180,
+      "vegetarian": true
+    },
+    {
+      "type": "Food",
+      "name": "Tort de ciocolata",
+      "price": 150.0,
+      "category": "DESSERT",
+      "grams": 1500,
+      "vegetarian": true
+    }
+  ]
+}
