@@ -90,5 +90,15 @@ public abstract class Product {
     public int hashCode() {
         return Objects.hash(name.get());
     }
+
+    @Transient
+    public boolean isVegetarian() {
+        return true;
+    }
+
+    @Transient
+    public BooleanProperty isVegetarianProperty() {
+        return new SimpleBooleanProperty(isVegetarian());
+    }
 }
 

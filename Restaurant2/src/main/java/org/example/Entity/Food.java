@@ -16,8 +16,8 @@ public class Food extends Product {
 
     public Food(){
         super();
-        this.weight = new SimpleIntegerProperty();
-        this.isVegetarian = new SimpleBooleanProperty();
+        this.weight = new SimpleIntegerProperty(0);
+        this.isVegetarian = new SimpleBooleanProperty(false);
     }
 
     public Food(String name, double price, Category category, int weight, boolean isVegetarian) {
