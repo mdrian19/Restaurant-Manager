@@ -19,12 +19,12 @@ public class InfoConfig {
             if (is == null) {
                 System.out.println("Missing json file. Using default settings.");
             }
-
-            JsonNode root = mapper.readTree(is);
-            tax = root.get("tax").asDouble();
-            restaurantName = root.get("restaurantName").asText();
-            toppingPrice = root.get("toppingPrice").asDouble();
-
+            else{
+                JsonNode root = mapper.readTree(is);
+                tax = root.get("tax").asDouble();
+                restaurantName = root.get("restaurantName").asText();
+                toppingPrice = root.get("toppingPrice").asDouble();
+            }
         } catch (Exception e) {
             System.out.println("Error reading config file (invalid or corrupted). Using default settings.");
         }

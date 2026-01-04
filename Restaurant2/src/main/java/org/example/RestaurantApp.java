@@ -16,6 +16,8 @@ import javafx.util.converter.NumberStringConverter;
 import javafx.stage.FileChooser;
 import org.example.Entity.*;
 
+import java.io.File;
+
 public class RestaurantApp extends Application {
     private TextField nameField;
     private TextField priceField;

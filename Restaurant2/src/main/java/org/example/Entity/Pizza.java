@@ -18,11 +18,13 @@ public final class Pizza extends Food {
     private ObjectProperty<Builder.Sauce> sauce;
 
     @Transient
-    private final ListProperty<Builder.Topping> defaultToppings;
+    private ListProperty<Builder.Topping> defaultToppings;
     @Transient
     private final ListProperty<Builder.Topping> customToppings;
     @Transient
     private final ListProperty<Builder.Topping> deletedToppings;
+
+    private List<Builder.Topping> defaultToppingsBackup = new ArrayList<>();
 
     public Pizza(){
         super();
@@ -43,8 +45,11 @@ public final class Pizza extends Food {
         this.customToppings = new SimpleListProperty<>(observableArrayList());
         this.deletedToppings = new SimpleListProperty<>(observableArrayList());
 
-        if (toppings != null) this.defaultToppings.addAll(toppings);
-        this.customToppings.addAll(this.defaultToppings);
+        if (toppings != null) {
+            this.defaultToppingsBackup = new ArrayList<>(toppings);
+            this.defaultToppings.addAll(toppings);
+            this.customToppings.addAll(toppings);
+        }
     }
 
     private Pizza (Builder builder) {
@@ -56,12 +61,16 @@ public final class Pizza extends Food {
         this.defaultToppings = new SimpleListProperty<>(observableArrayList(builder.defaultToppings));
         this.customToppings = new SimpleListProperty<>(observableArrayList(builder.customToppings));
         this.deletedToppings = new SimpleListProperty<>(observableArrayList());
+
+        this.defaultToppingsBackup = new ArrayList<>(builder.defaultToppings);
+        this.defaultToppings.addAll(builder.defaultToppings);
+        this.customToppings.addAll(builder.customToppings);
     }
 
     @Enumerated(EnumType.STRING)
     @Column(name = "dough")
     public Builder.Dough getDough() { return dough.get(); }
-    public void setDough(Builder.Dough dough) { 
+    public void setDough(Builder.Dough dough) {
         if (this.dough == null) this.dough = new SimpleObjectProperty<>();
         this.dough.set(dough); }
     @Transient
@@ -70,29 +79,42 @@ public final class Pizza extends Food {
     @Enumerated(EnumType.STRING)
     @Column(name = "sauce")
     public Builder.Sauce getSauce() { return sauce.get(); }
-    public void setSauce(Builder.Sauce sauce) { 
+    public void setSauce(Builder.Sauce sauce) {
         if (this.sauce == null) this.sauce = new SimpleObjectProperty<>();
         this.sauce.set(sauce); }
     @Transient
     public ObjectProperty<Builder.Sauce> sauceProperty() { return sauce; }
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @Column(name = "default_toppings")
-    public ObservableList<Builder.Topping> getDefaultToppings() { return defaultToppings.get(); }
+    @CollectionTable(name = "pizza_default_toppings", joinColumns = @JoinColumn(name = "pizza_id"))
+    @Column(name = "topping")
+    @Enumerated(EnumType.STRING)
+    public List<Builder.Topping> getDefaultToppings() { return defaultToppingsBackup; }
+    public void setDefaultToppings(List<Builder.Topping> toppings) {
+        this.defaultToppingsBackup = (toppings == null) ? new ArrayList<>() : new ArrayList<>(toppings);
+        if (this.defaultToppings == null) {
+            ObservableList<Builder.Topping> defaultToppings = observableArrayList();
+            this.defaultToppings = new SimpleListProperty<>(defaultToppings);
+        }
+        this.defaultToppings.clear();
+        this.defaultToppings.addAll(this.defaultToppingsBackup);
+    }
     @Transient
     public ListProperty<Builder.Topping> defaultToppingsProperty() { return defaultToppings; }
 
+    @Transient
     public ObservableList<Builder.Topping> getCustomToppings() { return customToppings.get(); }
     @Transient
     public ListProperty<Builder.Topping> customToppingsProperty() { return customToppings; }
 
+    @Transient
     public ObservableList<Builder.Topping> getDeletedToppings() { return deletedToppings.get(); }
     @Transient
     public ListProperty<Builder.Topping> deletedToppingsProperty() { return deletedToppings; }
 
     public void setCustomToppings(Collection<Builder.Topping> toppings){
         this.customToppings.clear();
-        this.customToppings.addAll(toppings);
+        if (toppings != null) this.customToppings.addAll(toppings);
     }
 
     public static class Builder {

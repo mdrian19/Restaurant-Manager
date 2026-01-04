@@ -10,7 +10,7 @@ import java.util.Objects;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "product_type", discriminatorType = DiscriminatorType.STRING)
 @Access(AccessType.PROPERTY)
-public abstract sealed class Product permits Food, Drink {
+public abstract class Product {
     private Long id;
 
     @Transient

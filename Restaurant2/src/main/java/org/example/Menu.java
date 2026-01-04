@@ -65,7 +65,9 @@ public final class Menu {
         try {
             ObjectMapper mapper = new ObjectMapper();
             List<Product> productsToExport = repo.getAllProducts();
-            mapper.writerWithDefaultPrettyPrinter().writeValue(file, productsToExport);
+            Map<String, List<Product>> exportMap = new HashMap<>();
+            exportMap.put("products", productsToExport);
+            mapper.writerWithDefaultPrettyPrinter().writeValue(file, exportMap);
         } catch (IOException e) {
             System.out.println("Error: unable to export data to JSON file.");
         }
@@ -85,6 +87,7 @@ public final class Menu {
             }
         } catch (IOException e) {
             System.out.println("Error: unable to import data from JSON file.");
+            e.printStackTrace();
         }
     }
 

@@ -7,7 +7,7 @@ import javafx.beans.property.*;
 @Entity
 @DiscriminatorValue("FOOD")
 @Access(AccessType.PROPERTY)
-public sealed class Food extends Product permits Pizza {
+public class Food extends Product {
     @Transient
     private IntegerProperty weight;
 
