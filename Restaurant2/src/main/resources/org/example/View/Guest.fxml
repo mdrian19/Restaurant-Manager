@@ -13,30 +13,37 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <BorderPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.Controller.GuestController">
     <top>
         <VBox spacing="10.0" BorderPane.alignment="CENTER">
             <padding><Insets bottom="10.0" left="10.0" right="10.0" top="10.0" /></padding>
             <children>
-                <Label text="Welcome to Restaurant 'La Andrei'!">
-                    <font><Font name="System Bold" size="18.0" /></font>
-                </Label>
-                <TextField fx:id="searchField" onAction="#handleSearch" promptText="Search product..." />
-                <Button fx:id="backButton" onAction="#handleBack" text="Back to login" />
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                    <children>
+                        <Label text="Bine ati venit la restaurantul 'La Andrei'!">
+                            <font><Font name="System Bold" size="18.0" /></font>
+                        </Label>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Button fx:id="loginButton" onAction="#handleLoginRedirect" text="Login" />
+                    </children>
+                </HBox>
+                <TextField fx:id="searchField" onAction="#handleSearch" promptText="Cauta articol..." />
             </children>
         </VBox>
     </top>
     <left>
         <VBox spacing="15.0" BorderPane.alignment="CENTER">
             <padding><Insets right="10.0" left="10.0"/></padding>
-            <Label text="Filtrare" underline="true"><font><Font name="System Bold" size="14.0"/></font></Label>
+            <Label text="Filtre"><font><Font name="System Bold" size="14.0"/></font></Label>
 
             <CheckBox fx:id="vegetarianFilter" text="Vegetarian" />
 
             <Label text="Categorie:" />
             <ComboBox fx:id="categoryFilter" prefWidth="150.0" />
 
-            <Label text="Preț Maxim:" />
+            <Label text="Pret maxim:" />
             <Slider fx:id="priceSlider" majorTickUnit="50.0" max="200.0" showTickLabels="true" showTickMarks="true" />
         </VBox>
     </left>
@@ -48,11 +55,11 @@
     <right>
         <VBox prefWidth="200.0" spacing="10.0" style="-fx-background-color: #f4f4f4;" BorderPane.alignment="CENTER">
             <padding><Insets bottom="10.0" left="10.0" right="10.0" top="10.0" /></padding>
-            <Label text="Product details:">
+            <Label text="Detalii articol:">
                 <font><Font name="System Bold" size="14.0" /></font>
             </Label>
             <Separator prefWidth="200.0" />
-            <Label fx:id="detailsLabel" text="Select any product..." wrapText="true" />
+            <Label fx:id="detailsLabel" text="Selecteaza un articol din tabel..." wrapText="true" />
         </VBox>
     </right>
 </BorderPane>

@@ -1,10 +1,13 @@
 <persistence xmlns="https://jakarta.ee/xml/ns/persistence" version="3.0">
     <persistence-unit name = "RestaurantPU">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <class>org.example.Entity.User</class>
         <class>org.example.Entity.Product</class>
         <class>org.example.Entity.Food</class>
         <class>org.example.Entity.Drink</class>
         <class>org.example.Entity.Pizza</class>
+        <class>org.example.Entity.Order</class>
+        <class>org.example.Entity.OrderItem</class>
 
         <properties>
             <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/restaurantdb"/>

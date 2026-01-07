@@ -16,7 +16,7 @@ public final class Drink extends Product {
     }
 
     public Drink(String name, double price, Category category, int volume) {
-        super(name, price, category);
+        super(name, price, category, true);
         this.volume.set(volume);
     }
 
@@ -28,4 +28,10 @@ public final class Drink extends Product {
     }
     @Transient
     public IntegerProperty volumeProperty() { return volume; }
+
+    @Override
+    @Transient
+    public boolean isVegetarian() {
+        return true;
+    }
 }

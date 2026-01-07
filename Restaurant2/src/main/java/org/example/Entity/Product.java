@@ -18,6 +18,10 @@ public abstract class Product {
 
     @Transient
     private DoubleProperty price;
+
+    @Transient
+    private BooleanProperty isVegetarian;
+
     public static final double tax = 0.09;
 
     public enum Category{
@@ -35,12 +39,14 @@ public abstract class Product {
         this.name = new SimpleStringProperty();
         this.price = new SimpleDoubleProperty();
         this.category = new SimpleObjectProperty<>();
+        this.isVegetarian = new SimpleBooleanProperty();
     }
 
-    public Product(String name, double price, Category category) {
+    public Product(String name, double price, Category category, Boolean vegetarian) {
         this.name = new SimpleStringProperty(name);
         this.price = new SimpleDoubleProperty(price * (1 + tax));
         this.category = new SimpleObjectProperty<>(category);
+        this.isVegetarian = new SimpleBooleanProperty(vegetarian);
     }
 
     @Id
@@ -57,12 +63,14 @@ public abstract class Product {
     public StringProperty nameProperty() { return name; }
 
     @Column(name = "price")
-    public double getPrice() { return price.get(); }
+    public double getPrice() {
+        return Math.round(price.get() * 100.0) / 100.0;
+    }
     public void setPrice(double price) { 
         if (this.price == null) this.price = new SimpleDoubleProperty();
         this.price.set(price); }
     @Transient
-    public DoubleProperty priceProperty() { return price; }
+    public DoubleProperty priceProperty() { return new SimpleDoubleProperty((double) Math.round(price.get() * 100.0) / 100); }
 
     @Enumerated(EnumType.STRING)
     @Column(name = "category")
@@ -71,7 +79,15 @@ public abstract class Product {
         if (this.category == null) this.category = new SimpleObjectProperty<>();
         this.category.set(category); }
     @Transient
-    public ObjectProperty<Category> categoryProperty() { return category; }
+    public StringProperty categoryStringProperty() {
+        return new SimpleStringProperty(switch(getCategory()) {
+            case APPETIZER -> "Apertitiv";
+            case MAIN_COURSE -> "Fel principal";
+            case DESSERT -> "Desert";
+            case SOFT_DRINK -> "Bautura racoritoare";
+            case ALCOHOLIC_DRINK -> "Bautura alcoolica";
+        });
+    }
 
     @Override
     public String toString() {
@@ -93,7 +109,7 @@ public abstract class Product {
 
     @Transient
     public boolean isVegetarian() {
-        return true;
+        return this.isVegetarian.get();
     }
 
     @Transient
@@ -101,4 +117,3 @@ public abstract class Product {
         return new SimpleBooleanProperty(isVegetarian());
     }
 }
-

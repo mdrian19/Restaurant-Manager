@@ -21,9 +21,8 @@ public class Food extends Product {
     }
 
     public Food(String name, double price, Category category, int weight, boolean isVegetarian) {
-        super(name, price, category);
+        super(name, price, category, isVegetarian);
         this.weight = new SimpleIntegerProperty(weight);
-        this.isVegetarian = new SimpleBooleanProperty(isVegetarian);
     }
 
     @Column(name = "weight")
@@ -35,10 +34,24 @@ public class Food extends Product {
     public IntegerProperty weightProperty() { return weight; }
 
     @Column(name = "is_vegetarian")
-    public boolean getVegetarian() { return isVegetarian.get(); }
-    public void setVegetarian(boolean vegetarian) { 
+    public boolean getIsVeg() {
+        return isVegetarian.get();
+    }
+
+    public void setIsVeg(boolean vegetarian) {
         if (this.isVegetarian == null) this.isVegetarian = new SimpleBooleanProperty();
-        isVegetarian.set(vegetarian); }
+        this.isVegetarian.set(vegetarian);
+    }
+
     @Transient
-    public BooleanProperty isVegetarianProperty() { return isVegetarian; }
+    @Override
+    public BooleanProperty isVegetarianProperty() {
+        return isVegetarian;
+    }
+
+    @Override
+    @Transient
+    public boolean isVegetarian() {
+        return getIsVeg();
+    }
 }

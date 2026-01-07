@@ -31,7 +31,7 @@ public class GuestController {
     private Label detailsLabel;
 
     @FXML
-    private Button backButton;
+    private Button loginButton;
 
     private final ProductService productService = new ProductService();
     private List<Product> allProducts;
@@ -45,19 +45,19 @@ public class GuestController {
         priceColumn.setCellValueFactory(cell -> cell.getValue().priceProperty());
 
         TableColumn<Product,String> categoryColumn = new TableColumn<>("Categorie");
-        categoryColumn.setCellValueFactory(cell -> cell.getValue().categoryProperty().asString());
+        categoryColumn.setCellValueFactory(cell -> cell.getValue().categoryStringProperty());
 
         productsTable.getColumns().setAll(nameColumn, priceColumn, categoryColumn);
 
         allProducts = productService.getAllProducts();
         updateTable(allProducts);
 
-        categoryFilter.setItems(FXCollections.observableArrayList("All",
-                "APPETIZER",
-                "MAIN_COURSE",
-                "DESSERT",
-                "SOFT_DRINK",
-                "ALCOHOLIC_DRINK"));
+        categoryFilter.setItems(FXCollections.observableArrayList("Toate",
+                "Aperitiv",
+                "Fel principal",
+                "Desert",
+                "Bautura racoritoare",
+                "Bautura alcoolica"));
         categoryFilter.getSelectionModel().selectFirst();
 
         vegetarianFilter.selectedProperty().addListener(
@@ -75,7 +75,7 @@ public class GuestController {
                 if(!newValue.equals(oldValue))
                     applyFilters();});
 
-        productsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+        productsTable.getSelectionModel().selectedItemProperty().addListener((observable, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 showDetails(newSelection);
             }
@@ -108,20 +108,20 @@ public class GuestController {
         StringBuilder sb = new StringBuilder();
         sb.append("Nume: ").append(p.getName()).append("\n");
         sb.append("Preț: ").append(p.getPrice()).append(" RON\n");
-        sb.append("Categorie: ").append(p.getCategory()).append("\n\n");
+        sb.append("Categorie: ").append(p.categoryStringProperty().get()).append("\n");
 
         switch (p) {
             case Pizza pizza -> {
                 sb.append("--- Detalii Pizza ---\n");
-                sb.append("Blat: ").append(pizza.getDough()).append("\n");
-                sb.append("Sos: ").append(pizza.getSauce()).append("\n");
-                sb.append("Topping-uri: ").append(pizza.getCustomToppings()).append("\n");
+                sb.append("Blat: ").append(pizza.getDoughString()).append("\n");
+                sb.append("Sos: ").append(pizza.getSauceString()).append("\n");
+                sb.append("Topping-uri: ").append(pizza.getToppingsString()).append("\n");
                 sb.append("Gramaj: ").append(pizza.getWeight()).append("g\n");
-                sb.append("Vegetarian: ").append(pizza.getVegetarian() ? "DA" : "NU").append("\n");
+                sb.append("Vegetarian: ").append(pizza.isVegetarian() ? "DA" : "NU").append("\n\n");
             }
             case Food food -> {
                 sb.append("Gramaj: ").append(food.getWeight()).append("g\n");
-                sb.append("Vegetarian: ").append(food.getVegetarian() ? "DA" : "NU").append("\n");
+                sb.append("Vegetarian: ").append(food.isVegetarian() ? "DA" : "NU").append("\n");
             }
             case Drink drink -> sb.append("Volum: ").append(drink.getVolume()).append("ml\n");
             default -> {
@@ -132,11 +132,11 @@ public class GuestController {
     }
 
     @FXML
-    private void handleBack(){
+    private void handleLoginRedirect(){
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/View/Login.fxml"));
             Parent root = loader.load();
-            Stage stage = (Stage) backButton.getScene().getWindow();
+            Stage stage = (Stage) loginButton.getScene().getWindow();
             stage.setTitle("La Andrei - Login");
             stage.setScene(new Scene(root));
             stage.centerOnScreen();

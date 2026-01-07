@@ -28,15 +28,23 @@ public class ProductService {
                 .findFirst();
     }
 
-    public List<Product> filterProducts(List<Product> inputList, boolean onlyVegetarian, String category, double maxPrice) {
+    public List<Product> filterProducts(List<Product> inputList, boolean vegetarian, String category, double maxPrice) {
         return inputList.stream()
                 .filter(p -> {
-                    if (!onlyVegetarian) return true;
+                    if (!vegetarian) return true;
                     return p.isVegetarian();
                 })
                 .filter(p -> {
-                    if (category == null || category.equals("All")) return true;
-                    return p.getCategory().toString().equalsIgnoreCase(category);
+                    if (category == null || category.equals("Toate")) return true;
+                    boolean fitsCategory = false;
+                    switch(category){
+                        case "Aperitiv" -> fitsCategory = p.getCategory() == Product.Category.APPETIZER;
+                        case "Fel principal" -> fitsCategory = p.getCategory() == Product.Category.MAIN_COURSE;
+                        case "Desert" -> fitsCategory = p.getCategory() == Product.Category.DESSERT;
+                        case "Bautura racoritoare" -> fitsCategory = p.getCategory() == Product.Category.SOFT_DRINK;
+                        case "Bautura alcoolica" -> fitsCategory = p.getCategory() == Product.Category.ALCOHOLIC_DRINK;
+                    }
+                    return fitsCategory;
                 })
                 .filter(p -> maxPrice <= 0 || p.getPrice() <= maxPrice)
                 .collect(Collectors.toList());
@@ -157,7 +165,7 @@ public class ProductService {
                 break;
             case VEGETARIAN_ALPHABETICAL:
                 String vegList = compressProductsMap()
-                        .filter(p -> p instanceof Food f && f.getVegetarian())
+                        .filter(p -> p instanceof Food f && f.isVegetarian())
                         .sorted(Comparator.comparing(Product::getName, String.CASE_INSENSITIVE_ORDER))
                         .map(Product::toString)
                         .collect(Collectors.joining("\n"));

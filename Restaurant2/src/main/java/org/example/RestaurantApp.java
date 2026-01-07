@@ -21,15 +21,14 @@ public class RestaurantApp extends Application {
         userService.seedAdminUser();
 
         try{
-            Parent root = FXMLLoader.load(getClass().getResource("/org/example/View/Login.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/org/example/View/Guest.fxml"));
             Scene scene = new Scene(root);
-            primaryStage.setTitle("La Andrei - Login");
+            primaryStage.setTitle("La Andrei");
             primaryStage.setScene(scene);
             primaryStage.show();
         }
         catch (Exception e){
-//            System.out.println("Error loading initial interface: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("Error loading initial interface: " + e.getMessage());
         }
     }
 

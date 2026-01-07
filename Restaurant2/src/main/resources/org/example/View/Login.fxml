@@ -24,8 +24,8 @@
 
     <PasswordField fx:id="passwordField" promptText="Password" />
 
-    <Button fx:id="loginButton" defaultButton="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleLogin" text="Logare Personal" />
+    <Button fx:id="loginButton" defaultButton="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleLogin" text="Login" />
 
-    <Button fx:id="guestButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#loadGuestInterface" text="Continuă ca Client (Guest)" />
+    <Button fx:id="guestButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#loadGuestInterface" text="Continua ca client" />
 
 </VBox>

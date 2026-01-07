@@ -3,118 +3,124 @@ package org.example.Entity;
 import jakarta.persistence.*;
 import jakarta.persistence.Transient;
 import javafx.beans.property.*;
-import javafx.collections.ObservableList;
+import javafx.collections.FXCollections;
 
-import static javafx.collections.FXCollections.observableArrayList;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @DiscriminatorValue("PIZZA")
 @Access(AccessType.PROPERTY)
 public final class Pizza extends Food {
     @Transient
-    private ObjectProperty<Builder.Dough> dough;
-    @Transient
-    private ObjectProperty<Builder.Sauce> sauce;
+    private final ObjectProperty<Builder.Dough> dough = new SimpleObjectProperty<>();
 
     @Transient
-    private ListProperty<Builder.Topping> defaultToppings;
-    @Transient
-    private final ListProperty<Builder.Topping> customToppings;
-    @Transient
-    private final ListProperty<Builder.Topping> deletedToppings;
+    private final ObjectProperty<Builder.Sauce> sauce = new SimpleObjectProperty<>();
 
-    private List<Builder.Topping> defaultToppingsBackup = new ArrayList<>();
+    @Transient
+    private final ListProperty<Builder.Topping> toppings = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     public Pizza(){
         super();
-        this.dough = new SimpleObjectProperty<>();
-        this.sauce = new SimpleObjectProperty<>();
-        this.defaultToppings = new SimpleListProperty<>(observableArrayList());
-        this.customToppings = new SimpleListProperty<>(observableArrayList());
-        this.deletedToppings = new SimpleListProperty<>(observableArrayList());
     }
 
     public Pizza(String name, double price, Category category, int weight, boolean isVegetarian,
                  Builder.Dough dough, Builder.Sauce sauce,
                  List<Builder.Topping> toppings) {
         super(name, price, category, weight, isVegetarian);
-        this.dough = new SimpleObjectProperty<>(dough);
-        this.sauce = new SimpleObjectProperty<>(sauce);
-        this.defaultToppings = new SimpleListProperty<>(observableArrayList(toppings));
-        this.customToppings = new SimpleListProperty<>(observableArrayList());
-        this.deletedToppings = new SimpleListProperty<>(observableArrayList());
-
+        this.dough.set(dough);
+        this.sauce.set(sauce);
         if (toppings != null) {
-            this.defaultToppingsBackup = new ArrayList<>(toppings);
-            this.defaultToppings.addAll(toppings);
-            this.customToppings.addAll(toppings);
+            this.toppings.addAll(toppings);
         }
     }
 
     private Pizza (Builder builder) {
         super(builder.name, builder.price, builder.category, builder.weight, builder.isVegetarian);
-
-        this.dough = new SimpleObjectProperty<>(builder.dough);
-        this.sauce = new SimpleObjectProperty<>(builder.sauce);
-
-        this.defaultToppings = new SimpleListProperty<>(observableArrayList(builder.defaultToppings));
-        this.customToppings = new SimpleListProperty<>(observableArrayList(builder.customToppings));
-        this.deletedToppings = new SimpleListProperty<>(observableArrayList());
-
-        this.defaultToppingsBackup = new ArrayList<>(builder.defaultToppings);
-        this.defaultToppings.addAll(builder.defaultToppings);
-        this.customToppings.addAll(builder.customToppings);
+        this.dough.set(builder.dough);
+        this.sauce.set(builder.sauce);
+        this.toppings.addAll(builder.toppings);
     }
 
     @Enumerated(EnumType.STRING)
     @Column(name = "dough")
-    public Builder.Dough getDough() { return dough.get(); }
-    public void setDough(Builder.Dough dough) {
-        if (this.dough == null) this.dough = new SimpleObjectProperty<>();
-        this.dough.set(dough); }
-    @Transient
-    public ObjectProperty<Builder.Dough> doughProperty() { return dough; }
+    public Builder.Dough getDough() {
+        return dough.get();
+    }
+    public void setDough(Builder.Dough d) {
+        this.dough.set(d);
+    }
+    public ObjectProperty<Builder.Dough> doughProperty() {
+        return dough;
+    }
 
     @Enumerated(EnumType.STRING)
     @Column(name = "sauce")
-    public Builder.Sauce getSauce() { return sauce.get(); }
-    public void setSauce(Builder.Sauce sauce) {
-        if (this.sauce == null) this.sauce = new SimpleObjectProperty<>();
-        this.sauce.set(sauce); }
-    @Transient
-    public ObjectProperty<Builder.Sauce> sauceProperty() { return sauce; }
+    public Builder.Sauce getSauce() {
+        return sauce.get();
+    }
+    public void setSauce(Builder.Sauce s) {
+        this.sauce.set(s);
+    }
+
+    public ObjectProperty<Builder.Sauce> sauceProperty() {
+        return sauce;
+    }
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "pizza_default_toppings", joinColumns = @JoinColumn(name = "pizza_id"))
     @Column(name = "topping")
     @Enumerated(EnumType.STRING)
-    public List<Builder.Topping> getDefaultToppings() { return defaultToppingsBackup; }
-    public void setDefaultToppings(List<Builder.Topping> toppings) {
-        this.defaultToppingsBackup = (toppings == null) ? new ArrayList<>() : new ArrayList<>(toppings);
-        if (this.defaultToppings == null) {
-            ObservableList<Builder.Topping> defaultToppings = observableArrayList();
-            this.defaultToppings = new SimpleListProperty<>(defaultToppings);
-        }
-        this.defaultToppings.clear();
-        this.defaultToppings.addAll(this.defaultToppingsBackup);
+    public List<Builder.Topping> getToppings() {
+        return toppings.get();
     }
-    @Transient
-    public ListProperty<Builder.Topping> defaultToppingsProperty() { return defaultToppings; }
+    public void setToppings(List<Builder.Topping> t) {
+        this.toppings.clear();
+        if (t != null) this.toppings.addAll(t);
+    }
+
+    public ListProperty<Builder.Topping> toppingsProperty() {
+        return toppings;
+    }
 
     @Transient
-    public ObservableList<Builder.Topping> getCustomToppings() { return customToppings.get(); }
-    @Transient
-    public ListProperty<Builder.Topping> customToppingsProperty() { return customToppings; }
+    public String getDoughString(){
+        if (getDough() == null) return "";
+        return switch(getDough()) {
+            case THIN_CRUST -> "Subtire";
+            case THICK_CRUST -> "Groasa";
+            case STUFFED_CRUST -> "Umpluta";
+        };
+    }
 
     @Transient
-    public ObservableList<Builder.Topping> getDeletedToppings() { return deletedToppings.get(); }
-    @Transient
-    public ListProperty<Builder.Topping> deletedToppingsProperty() { return deletedToppings; }
+    public String getSauceString(){
+        if (getSauce() == null) return "";
+        return switch(getSauce()) {
+            case TOMATO -> "Rosii";
+            case ALFREDO -> "Alfredo";
+            case PESTO -> "Pesto";
+        };
+    }
 
-    public void setCustomToppings(Collection<Builder.Topping> toppings){
-        this.customToppings.clear();
-        if (toppings != null) this.customToppings.addAll(toppings);
+    @Transient
+    public String getToppingsString(){
+        if (getToppings() == null || getToppings().isEmpty()) return "fara topping-uri";
+
+        return getToppings().stream()
+                .map(t -> switch (t) {
+                    case EXTRA_MOZZARELLA -> "Extra mozzarella";
+                    case SALAMI -> "Salam";
+                    case MUSHROOMS -> "Ciuperci";
+                    case BASIL -> "Busuioc";
+                    case OLIVES -> "Masline";
+                    case CORN -> "Porumb";
+                    case HAM -> "Sunca";
+                    case PEPPERS -> "Ardei";
+                })
+                .collect(Collectors.joining(", "));
     }
 
     public static class Builder {
@@ -125,8 +131,7 @@ public final class Pizza extends Food {
         private boolean isVegetarian;
         private Dough dough;
         private Sauce sauce;
-        private final Vector<Topping> defaultToppings = new Vector<>();
-        private final Vector<Topping> customToppings = new Vector<>();
+        private final List<Topping> toppings = new ArrayList<>();
 
         public Builder setName(String name){ this.name = name; return this; }
         public Builder setPrice(double price){ this.price = price; return this; }
@@ -135,18 +140,19 @@ public final class Pizza extends Food {
         public Builder setIsVegetarian(boolean v){ this.isVegetarian = v; return this; }
         public Builder setDough(Dough d){ this.dough = d; return this; }
         public Builder setSauce(Sauce s){ this.sauce = s; return this; }
-        public Builder addDefaultTopping(Topping t){ this.defaultToppings.add(t); return this; }
-        public Builder addCustomTopping(Topping t){ this.customToppings.add(t); return this; }
+        public Builder addTopping(Topping t){ this.toppings.add(t); return this; }
+        public Builder setToppings(List<Topping> t){
+            this.toppings.clear();
+            if(t != null) this.toppings.addAll(t);
+            return this;
+        }
 
         public Pizza build(){
-            if (customToppings.isEmpty()) customToppings.addAll(defaultToppings);
-            Pizza p = new Pizza(this);
-            return p;
+            return new Pizza(this);
         }
 
         public enum Dough { THIN_CRUST, THICK_CRUST, STUFFED_CRUST }
         public enum Sauce { TOMATO, ALFREDO, PESTO }
         public enum Topping { EXTRA_MOZZARELLA, SALAMI, MUSHROOMS, BASIL, OLIVES, CORN, HAM, PEPPERS }
     }
-
 }

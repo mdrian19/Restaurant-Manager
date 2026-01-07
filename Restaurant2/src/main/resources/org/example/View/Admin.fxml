@@ -18,7 +18,7 @@
     <children>
         <TabPane layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <tabs>
-                <Tab text="Staff Manager">
+                <Tab text="Angajati">
                     <content>
                         <VBox spacing="15.0">
                             <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
@@ -32,6 +32,12 @@
                             <TableView fx:id="staffTable" VBox.vgrow="ALWAYS" />
                             <Button onAction="#handleDeleteStaff" text="Fire" textFill="RED" />
                         </VBox>
+                    </content>
+                </Tab>
+
+                <Tab text="Gestiune Meniu">
+                    <content>
+                        <Label text="Aici poți muta tabelul de produse din iterațiile trecute."/>
                     </content>
                 </Tab>
 
@@ -49,9 +55,9 @@
                     </content>
                 </Tab>
 
-                <Tab text="Gestiune Meniu">
+                <Tab text = "Istoric comenzi">
                     <content>
-                        <Label text="Aici poți muta tabelul de produse din iterațiile trecute."/>
+                        <TableView fx:id="ordersHistoryTable" />
                     </content>
                 </Tab>
             </tabs>
