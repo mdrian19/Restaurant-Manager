@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import org.example.Entity.*;
@@ -14,6 +15,7 @@ import org.example.Service.OrderService;
 import org.example.Service.ProductService;
 
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class StaffController {
@@ -37,6 +39,8 @@ public class StaffController {
     @FXML private TableColumn<Order, String> orderDate;
     @FXML private TableColumn<Order, Double> orderTotal;
     @FXML private TableColumn<Order, String> orderDetails;
+
+    @FXML private ProgressIndicator loadingSpinner;
 
     private final ProductService productService = new ProductService();
     private final OrderService orderService = new OrderService();
@@ -65,7 +69,11 @@ public class StaffController {
         productName.setCellValueFactory(cell -> cell.getValue().nameProperty());
         productPrice.setCellValueFactory(cell -> cell.getValue().priceProperty().asObject());
         productCategory.setCellValueFactory(cell -> cell.getValue().categoryStringProperty());
-        menuTable.setItems(FXCollections.observableArrayList(productService.getAllProducts()));
+
+        var visibleProducts = productService.getAllProducts().stream()
+                .filter(p -> !p.getName().equalsIgnoreCase("Bere gratis"))
+                .collect(Collectors.toList());
+        menuTable.setItems(FXCollections.observableArrayList(visibleProducts));
 
         orderItemName.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getProduct().getName()));
         orderItemPrice.setCellValueFactory(cell -> new SimpleDoubleProperty(cell.getValue().getPrice()).asObject());
@@ -115,24 +123,60 @@ public class StaffController {
             return;
         }
 
-        try{
-            currentOrder.setUser(currentUser);
-            orderService.saveOrder(currentOrder);
-            new Alert(Alert.AlertType.INFORMATION, "Order finalized successfully.").show();
+        loadingSpinner.setVisible(true);
+        orderTable.setDisable(true);
+
+        Task<Void> saveTask = new Task<>() {
+            @Override
+            protected Void call() {
+                currentOrder.setUser(currentUser);
+                orderService.saveOrder(currentOrder);
+                return null;
+            }
+        };
+
+        saveTask.setOnSucceeded(event -> {
+            loadingSpinner.setVisible(false);
+            orderTable.setDisable(false);
+            new Alert(Alert.AlertType.INFORMATION, "Order finalized successfully!").show();
 
             currentOrder = null;
             orderTable.getItems().clear();
             totalLabel.setText("0.00 RON");
             tablesList.getSelectionModel().clearSelection();
-            refreshOrdersHistoryTable();
-        } catch (Exception e){
-            new Alert(Alert.AlertType.ERROR, "Error finalizing order.").show();
-        }
+            handleRefreshHistory();
+        });
+
+        saveTask.setOnFailed(event -> {
+            loadingSpinner.setVisible(false);
+            orderTable.setDisable(false);
+            new Alert(Alert.AlertType.ERROR, "Failed to finalize order.").show();
+        });
+
+        new Thread(saveTask).start();
     }
 
     @FXML
     private void handleRefreshHistory() {
-        refreshOrdersHistoryTable();
+        Task<List<Order>> loadTask = new Task<>() {
+            @Override
+            protected List<Order> call() {
+                return orderService.getOrdersHistory(currentUser);
+            }
+        };
+
+        loadTask.setOnSucceeded(event -> {
+            ordersHistoryTable.setItems(FXCollections.observableArrayList(loadTask.getValue()));
+            loadingSpinner.setVisible(false);
+        });
+
+        loadTask.setOnFailed(event -> {
+            loadingSpinner.setVisible(false);
+            new Alert(Alert.AlertType.ERROR, "Failed to load order history.").show();
+        });
+
+        loadingSpinner.setVisible(true);
+        new Thread(loadTask).start();
     }
 
     private void loadOrderForTable(String tableName){
@@ -158,9 +202,9 @@ public class StaffController {
 
     private void updateActiveOffersLabel() {
         StringBuilder sb = new StringBuilder();
-        if (offerService.isHappyHourActive()) sb.append("Happy Hour (-20% bauturi alcoolice)\n");
-        if (offerService.isValentinesDayActive()) sb.append("Valentine's day (-10% tot)\n");
-        if (offerService.isFreeBeerActive()) sb.append("Bere gratis la Pizza\n");
+        if (offerService.isPartyPackActive()) sb.append("Party Pack active\n");
+        if (offerService.isMealDealActive()) sb.append("Meal Deal active\n");
+        if (offerService.isHappyHourActive()) sb.append("Happy Hour active\n");
 
         if (sb.isEmpty()) offersLabel.setText("No active offers.");
         else offersLabel.setText(sb.toString());

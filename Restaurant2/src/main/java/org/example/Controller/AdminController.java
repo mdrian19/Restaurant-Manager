@@ -7,6 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.FileChooser;
 import org.example.Entity.*;
 import org.example.Entity.User.Role;
 import org.example.Service.OrderService;
@@ -14,6 +15,7 @@ import org.example.Service.ProductService;
 import org.example.Service.UserService;
 import org.example.Service.OfferService;
 
+import java.io.File;
 import java.time.format.DateTimeFormatter;
 
 public class AdminController {
@@ -32,9 +34,9 @@ public class AdminController {
     @FXML private ComboBox<Product.Category> prodCategoryField;
     @FXML private CheckBox prodVegetarianField;
 
+    @FXML private CheckBox mealDealCheck;
+    @FXML private CheckBox partyPackCheck;
     @FXML private CheckBox happyHourCheck;
-    @FXML private CheckBox valentinesDayCheck;
-    @FXML private CheckBox freeBeerCheck;
 
     @FXML private TableView<Order> ordersHistoryTable;
     @FXML private TableColumn<Order, Long> orderId;
@@ -98,13 +100,21 @@ public class AdminController {
     @FXML
     private void handleDeleteStaff(){
         User selected = staffTable.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            userService.deleteUser(selected);
-            refreshStaffTable();
-        }
-        else {
+        if (selected == null){
             showAlert("No staff member selected for deletion.");
+            return;
         }
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                "Are you sure you want to delete staff member: " + selected.getUsername() + "?\n All associated data will be lost.",
+                ButtonType.YES, ButtonType.NO);
+
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.YES){
+                userService.deleteUser(selected);
+                refreshStaffTable();
+            }
+        });
     }
 
     private void setupMenuTable(){
@@ -181,20 +191,20 @@ public class AdminController {
     }
 
     private void setupOffers(){
+        mealDealCheck.setSelected(offerService.isMealDealActive());
+        partyPackCheck.setSelected(offerService.isPartyPackActive());
         happyHourCheck.setSelected(offerService.isHappyHourActive());
-        valentinesDayCheck.setSelected(offerService.isValentinesDayActive());
-        freeBeerCheck.setSelected(offerService.isFreeBeerActive());
 
-        happyHourCheck.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            offerService.setHappyHourActive(newVal);
+        mealDealCheck.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            offerService.setMealDealActive(newValue);
         });
 
-        valentinesDayCheck.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            offerService.setValentinesDayActive(newVal);
+        partyPackCheck.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            offerService.setPartyPackActive(newValue);
         });
 
-        freeBeerCheck.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            offerService.setFreeBeerActive(newVal);
+        happyHourCheck.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            offerService.setHappyHourActive(newValue);
         });
     }
 
@@ -225,5 +235,32 @@ public class AdminController {
 
     private void showAlert(String message){
         new Alert(Alert.AlertType.ERROR, message).show();
+    }
+
+    @FXML
+    private void handleExportJson(){
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save menu as JSON");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
+
+        File file = fileChooser.showSaveDialog(staffTable.getScene().getWindow());
+        if (file != null) {
+            productService.exportMenuToJson(file);
+            new Alert(Alert.AlertType.INFORMATION, "Menu exported successfully.").show();
+        }
+    }
+
+    @FXML
+    private void handleImportJson(){
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Import menu from JSON");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
+
+        File file = fileChooser.showOpenDialog(staffTable.getScene().getWindow());
+        if (file != null) {
+            productService.importMenuFromJson(file);
+            refreshMenuTable();
+            new Alert(Alert.AlertType.INFORMATION, "Menu imported successfully.").show();
+        }
     }
 }

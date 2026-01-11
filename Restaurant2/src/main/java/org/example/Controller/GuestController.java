@@ -10,6 +10,7 @@ import javafx.stage.Stage;
 import org.example.Entity.*;
 import org.example.Service.ProductService;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GuestController {
     @FXML
@@ -49,7 +50,9 @@ public class GuestController {
 
         productsTable.getColumns().setAll(nameColumn, priceColumn, categoryColumn);
 
-        allProducts = productService.getAllProducts();
+        allProducts = productService.getAllProducts().stream()
+                .filter(p -> !p.getName().equalsIgnoreCase("Bere gratis"))
+                .collect(Collectors.toList());
         updateTable(allProducts);
 
         categoryFilter.setItems(FXCollections.observableArrayList("Toate",

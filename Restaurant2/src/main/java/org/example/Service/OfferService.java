@@ -3,120 +3,128 @@ package org.example.Service;
 import org.example.Entity.*;
 import org.example.Repository.OfferRepository;
 
-import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class OfferService {
     private final OfferRepository offerRepository = new OfferRepository();
 
-    private static final String HAPPY_HOUR = "HAPPY_HOUR";
-    private static final String VALENTINES_DAY = "VALENTINES_DAY";
-    private static final String FREE_BEER = "FREE_BEER";
+    private static final String HAPPY_HOUR = "HAPPY_HOUR_DRINKS";
+    private static final String MEAL_DEAL = "MEAL_DEAL";
+    private static final String PARTY_PACK = "PARTY_PACK";
 
     public OfferService(){
-        if (offerRepository.findByName(HAPPY_HOUR) == null) {
-            offerRepository.save(new Offer(HAPPY_HOUR, false));
-        }
-        if (offerRepository.findByName(VALENTINES_DAY) == null) {
-            offerRepository.save(new Offer(VALENTINES_DAY, false));
-        }
-        if (offerRepository.findByName(FREE_BEER) == null) {
-            offerRepository.save(new Offer(FREE_BEER, false));
-        }
+        seedOffers();
     }
+
+    private void seedOffers() {
+        if (offerRepository.findByName(HAPPY_HOUR) == null) offerRepository.save(new Offer(HAPPY_HOUR, false));
+        if (offerRepository.findByName(MEAL_DEAL) == null) offerRepository.save(new Offer(MEAL_DEAL, false));
+        if (offerRepository.findByName(PARTY_PACK) == null) offerRepository.save(new Offer(PARTY_PACK, false));
+    }
+
 
     public boolean isHappyHourActive() {
-        Offer offer = offerRepository.findByName(HAPPY_HOUR);
-        return offer != null && offer.isActive();
+        Offer o = offerRepository.findByName(HAPPY_HOUR);
+        return o != null && o.isActive();
     }
-
     public void setHappyHourActive(boolean active) {
-        Offer offer = new Offer(HAPPY_HOUR, active);
-        offerRepository.save(offer);
+        offerRepository.save(new Offer(HAPPY_HOUR, active));
     }
 
-    public boolean isValentinesDayActive() {
-        Offer offer = offerRepository.findByName(VALENTINES_DAY);
+    public boolean isMealDealActive() {
+        Offer o = offerRepository.findByName(MEAL_DEAL);
+        return o != null && o.isActive();
+    }
+    public void setMealDealActive(boolean active) {
+        offerRepository.save(new Offer(MEAL_DEAL, active));
+    }
+
+    public boolean isPartyPackActive() {
+        Offer o = offerRepository.findByName(PARTY_PACK);
+        return o != null && o.isActive();
+    }
+    public void setPartyPackActive(boolean active) {
+        offerRepository.save(new Offer(PARTY_PACK, active));
+    }
+
+    private boolean isActive (String name){
+        Offer offer = offerRepository.findByName(name);
         return offer != null && offer.isActive();
     }
 
-    public void setValentinesDayActive(boolean active) {
-        Offer offer = new Offer(VALENTINES_DAY, active);
-        offerRepository.save(offer);
+    private void setActive(String name, boolean active){
+        offerRepository.save(new Offer(name, active));
     }
 
-    public boolean isFreeBeerActive() {
-        Offer offer = offerRepository.findByName(FREE_BEER);
-        return offer != null && offer.isActive();
-    }
 
-    public void setFreeBeerActive(boolean active) {
-        Offer offer = new Offer(FREE_BEER, active);
-        offerRepository.save(offer);
-    }
-
-    public double calculateDiscount(List<OrderItem> items){
-        double totalDiscount = 0.0;
-
-        if (isHappyHourActive()){
-            totalDiscount += calculateHappyHourDiscount(items);
-        }
-        if (isValentinesDayActive()){
-            totalDiscount += calculateValentinesDayDiscount(items);
-        }
-        if (isFreeBeerActive()){
-            totalDiscount += calculateFreeBeerDiscount(items);
-        }
-        return totalDiscount;
-    }
-
-    private double calculateHappyHourDiscount(List<OrderItem> items){
+    public double calculateTotalDiscount(Order order) {
         double discount = 0.0;
-        for (OrderItem item : items) {
-            Product product = item.getProduct();
-            if (product instanceof Drink && Objects.equals(product.getCategory().toString(), "ALCOHOLIC_DRINK")) {
-                discount += product.getPrice() * item.getQuantity() * 0.20;
-            }
+        if (isPartyPackActive()) discount += calculatePartyPack(order);
+        if (isMealDealActive()) discount += calculateMealDeal(order);
+        if (isHappyHourActive()) discount += calculateHappyHour(order);
+        return discount;
+    }
+
+    private double calculatePartyPack(Order order){
+        List<Double> pizzaPrices = getPricesForCategory(order, "MAIN_COURSE", "Pizza");
+        Collections.sort(pizzaPrices);
+
+        int freePizzas = pizzaPrices.size() / 4;
+        double discount = 0.0;
+        for (int i = 0; i < freePizzas; i++) {
+            discount += pizzaPrices.get(i);
         }
         return discount;
     }
 
-    private double calculateValentinesDayDiscount(List<OrderItem> items){
+    private double calculateMealDeal(Order order){
+        long pizzaCount = order.getItems().stream()
+                .filter(item -> isPizza(item.getProduct()))
+                .mapToLong(OrderItem::getQuantity)
+                .sum();
+
+        List<Double> dessertPrices = getPricesForCategory(order, "DESSERT", null);
+        Collections.sort(dessertPrices);
+
         double discount = 0.0;
-        for (OrderItem item : items) {
-            Product product = item.getProduct();
-            discount += product.getPrice() * item.getQuantity() * 0.10;
+        long pairs = Math.min(pizzaCount, dessertPrices.size());
+        for (int i = 0; i < pairs; i++) {
+            discount += dessertPrices.get(i) * 0.25;
         }
         return discount;
     }
 
-    private double calculateFreeBeerDiscount(List<OrderItem> items) {
+    private double calculateHappyHour(Order order){
+        List<Double> drinkPrices = getPricesForCategory(order, "ALCOHOLIC_DRINK", null);
+        Collections.sort(drinkPrices);
+
         double discount = 0.0;
-        Product freeBeer = new Drink("Free Beer", 0.0, Product.Category.ALCOHOLIC_DRINK, 500);
-        for (OrderItem item : items){
-            if (item.getProduct() instanceof Pizza){
-                items.add(new OrderItem(freeBeer, item.getQuantity()));
-            }
+        int discountedCount = drinkPrices.size() / 2;
+        for (int i = 0; i < discountedCount; i++) {
+            discount += drinkPrices.get(i) * 0.5;
         }
-        return 0.0;
+        return discount;
     }
 
-    public String getActiveOffers(){
-        StringBuilder offers = new StringBuilder("Active Offers: ");
-        if (isHappyHourActive()){
-            offers.append("[Happy Hour: 20% off on all alcoholic drinks] ");
+    private List<Double> getPricesForCategory(Order order, String category, String nameFilter){
+        List<Double> prices = new ArrayList<>();
+        for (OrderItem item : order.getItems()) {
+            Product product = item.getProduct();
+            boolean matchesCategory = product.getCategory().name().equals(category);
+            boolean matchesName = nameFilter == null || product.getName().toLowerCase().contains(nameFilter.toLowerCase());
+
+            if  (matchesCategory && matchesName) {
+                for (int i = 0; i < item.getQuantity(); i++) {
+                    prices.add(product.getPrice());
+                }
+            }
         }
-        if (isValentinesDayActive()){
-            offers.append("[Valentine's Day: 10% off on all items] ");
-        }
-        if (isFreeBeerActive()){
-            offers.append("[Free Beer with every Pizza ordered] ");
-        }
-        if (offers.toString().equals("Active Offers: ")){
-            offers.append("None");
-        }
-        return offers.toString().trim();
+        return prices;
+    }
+
+    private boolean isPizza(Product p) {
+        return p instanceof Pizza || (p.getCategory().name().equals("MAIN_COURSE") && p.getName().toLowerCase().contains("pizza"));
     }
 }

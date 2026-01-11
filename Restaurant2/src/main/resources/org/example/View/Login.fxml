@@ -14,7 +14,7 @@
         <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
     </padding>
 
-    <Label text="Restaurant Authentication">
+    <Label text="'La Andrei' Authentication">
         <font>
             <Font name="System Bold" size="24.0" />
         </font>
@@ -24,8 +24,8 @@
 
     <PasswordField fx:id="passwordField" promptText="Password" />
 
-    <Button fx:id="loginButton" defaultButton="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleLogin" text="Login" />
+    <Button fx:id="loginButton" defaultButton="true" maxWidth="1000" mnemonicParsing="false" onAction="#handleLogin" text="Login" />
 
-    <Button fx:id="guestButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#loadGuestInterface" text="Continua ca client" />
+    <Button fx:id="guestButton" maxWidth="1000" mnemonicParsing="false" onAction="#loadGuestInterface" text="Continue as guest" />
 
 </VBox>

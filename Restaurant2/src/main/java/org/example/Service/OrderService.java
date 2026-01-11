@@ -5,6 +5,7 @@ import org.example.Entity.OrderItem;
 import org.example.Entity.Product;
 import org.example.Entity.User;
 import org.example.Repository.OrderRepository;
+import org.example.Repository.ProductRepository;
 
 import java.util.List;
 
@@ -13,14 +14,20 @@ public class OrderService {
     private final OfferService offerService = new OfferService();
 
     public void addItemToOrder(Order order, Product product, int quantity) {
+        boolean found = false;
         for (OrderItem item : order.getItems()) {
-            if (item.getProduct().getId().equals(product.getId())) {
+            if (item.getProduct().getId() != null
+                    && product.getId() != null
+                    && item.getProduct().getId().equals(product.getId())) {
                 item.setQuantity(item.getQuantity() + quantity);
-                return;
+                found = true;
+                break;
             }
         }
-        OrderItem newItem = new OrderItem(product, quantity);
-        order.addItem(newItem);
+        if (!found) {
+            OrderItem newItem = new OrderItem(product, quantity);
+            order.addItem(newItem);
+        }
     }
 
     public void removeItemFromOrder(Order order, OrderItem item) {
@@ -28,25 +35,34 @@ public class OrderService {
     }
 
     public double calculateTotal(Order order) {
-        double subtotal = order.getItems().stream()
-                .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
-                .sum();
-        double discount = offerService.calculateDiscount(order.getItems());
+        double subtotal = 0.0;
+        for (OrderItem item : order.getItems()) {
+            subtotal += item.getPrice();
+        }
+
+        double discount = offerService.calculateTotalDiscount(order);
         order.setTotal(Math.max(0, subtotal - discount));
         return subtotal - discount;
     }
 
-    public String getAppliedOffers(){
-        return offerService.getActiveOffers();
-    }
-
     public void saveOrder(Order order) {
+        try{
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            System.err.println(e);
+        }
         calculateTotal(order);
         order.setStatus("COMPLETED");
         orderRepository.save(order);
     }
 
     public List<Order> getOrdersHistory(User user) {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            System.err.println(e);
+        }
+
         if (user.getRole() == User.Role.ADMIN) {
             return orderRepository.findAll();
         }
