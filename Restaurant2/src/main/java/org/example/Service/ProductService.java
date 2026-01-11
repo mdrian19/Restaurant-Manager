@@ -138,6 +138,8 @@ public class ProductService {
                     }
                 }
             } catch (Exception e) {
+                System.err.println("Eroare la importul produsului: " + node.get("name"));
+                e.printStackTrace();
                 System.out.println("Invalid product, skipping entry.");
             }
         }

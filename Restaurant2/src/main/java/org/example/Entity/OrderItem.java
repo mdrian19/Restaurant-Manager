@@ -50,4 +50,12 @@ public class OrderItem {
         }
         return new SimpleDoubleProperty(0.0);
     }
+
+    @Transient
+    public double getPrice() {
+        if (this.product != null) {
+            return this.product.get().getPrice() * ((double) this.quantity.get());
+        }
+        return 0.0;
+    }
 }

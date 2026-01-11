@@ -2,17 +2,19 @@ package org.example.Repository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
+import jakarta.persistence.TypedQuery;
 import org.example.Entity.User;
+import org.example.Entity.User.Role;
 import java.util.List;
 import java.util.Optional;
 
 public class UserRepository {
     public Optional<User> findByUsername(String username){
-        try (EntityManager em = DatabaseManager.getEntityManager()){
-            User user = em.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class)
-                    .setParameter("username", username)
-                    .getSingleResult();
-            return Optional.of(user);
+        try {
+            EntityManager em = DatabaseManager.getEntityManager();
+            TypedQuery<User> query = em.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class);
+            query.setParameter("username", username);
+            return query.getResultList().stream().findFirst();
         } catch (NoResultException e){
             return Optional.empty();
         }
@@ -60,11 +62,20 @@ public class UserRepository {
         }
     }
 
-    public User getUsersByRole(User.Role role) {
-        try (EntityManager em = DatabaseManager.getEntityManager()){
-            return em.createQuery("SELECT u FROM User u WHERE u.role = :role", User.class)
-                    .setParameter("role", role)
-                    .getSingleResult();
+    public List<User> getUsersByRole(User.Role role) {
+        EntityManager em = DatabaseManager.getEntityManager();
+        try{
+            TypedQuery<User> query = em.createQuery(
+                    "SELECT u FROM User u WHERE u.role = :role", User.class);
+            query.setParameter("role", role);
+            return query.getResultList();
         }
+        catch (Exception e){
+            System.out.println("Error fetching users by role: " + e.getMessage());
+        }
+        finally{
+            em.close();
+        }
+        return List.of();
     }
 }

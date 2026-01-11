@@ -15,17 +15,10 @@ import org.example.Service.AuthenticationService;
 import java.util.Optional;
 
 public class LoginController {
-    @FXML
-    private TextField usernameField;
-
-    @FXML
-    private PasswordField passwordField;
-
-    @FXML
-    private Button loginButton;
-
-    @FXML
-    private Button guestButton;
+    @FXML private TextField usernameField;
+    @FXML private PasswordField passwordField;
+    @FXML private Button loginButton;
+    @FXML private Button guestButton;
 
     private final AuthenticationService authenticationService = new AuthenticationService();
 
@@ -52,8 +45,8 @@ public class LoginController {
             User user = authenticationService.authenticate(username, password).orElse(null);
             if (user != null) {
                 switch(user.getRole()){
-                    case ADMIN -> loadInterface("/org/example/View/Admin.fxml", "Admin Dashboard");
-                    case STAFF -> loadInterface("/org/example/View/Staff.fxml", "Staff Dashboard");
+                    case ADMIN -> loadInterface("/org/example/View/Admin.fxml", "Admin Dashboard", user);
+                    case STAFF -> loadInterface("/org/example/View/Staff.fxml", "Staff Dashboard", user);
                     default -> showAlert("Unknown user role.");
                 }
             }
@@ -67,13 +60,19 @@ public class LoginController {
 
     @FXML
     private void loadGuestInterface() {
-        loadInterface("/org/example/View/Guest.fxml", "Guest Menu");
+        loadInterface("/org/example/View/Guest.fxml", "Guest Menu", null);
     }
 
-    private void loadInterface(String fxmlFile, String title) {
+    private void loadInterface(String fxmlFile, String title, User user) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
             Parent root = loader.load();
+
+            if (user != null){
+                Object controller = loader.getController();
+                if (controller instanceof StaffController)
+                    ((StaffController) controller).initializeData(user);
+            }
 
             Stage stage = (Stage) loginButton.getScene().getWindow();
             stage.setTitle("La Andrei - " + title);

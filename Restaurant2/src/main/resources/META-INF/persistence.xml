@@ -6,6 +6,7 @@
         <class>org.example.Entity.Food</class>
         <class>org.example.Entity.Drink</class>
         <class>org.example.Entity.Pizza</class>
+        <class>org.example.Entity.Offer</class>
         <class>org.example.Entity.Order</class>
         <class>org.example.Entity.OrderItem</class>
 

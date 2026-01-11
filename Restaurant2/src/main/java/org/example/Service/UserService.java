@@ -3,6 +3,7 @@ package org.example.Service;
 import org.example.Entity.User;
 import org.example.Repository.UserRepository;
 import java.util.List;
+import java.util.Optional;
 
 public class UserService {
     private final UserRepository userRepository;
@@ -24,17 +25,17 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    public User getUsersByRole(User.Role role) {
+    public List<User> getUsersByRole(User.Role role) {
         return userRepository.getUsersByRole(role);
     }
 
     public void seedAdminUser() {
-        List<User> users = userRepository.getAllUsers();
-        boolean adminExists = users.stream().anyMatch(user -> user.getRole() == User.Role.ADMIN);
-        if (!adminExists) {
-            User adminUser = new User("admin", "1q2w3e", User.Role.ADMIN);
+        Optional<User> admin = userRepository.findByUsername("admin");
+        if (admin.isEmpty()) {
             registerUser("admin", "1q2w3e", User.Role.ADMIN);
-            userRepository.save(adminUser);
+        }
+        else{
+            System.out.println("Admin user already exists.");
         }
     }
 }

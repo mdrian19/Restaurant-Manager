@@ -3,6 +3,7 @@ package org.example.Controller;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -79,6 +80,11 @@ public class AdminController {
         String username = usernameField.getText();
         String password = passwordField.getText();
 
+        if (username.isEmpty() || password.isEmpty()){
+            showAlert("Username and password cannot be empty.");
+            return;
+        }
+
         try{
             userService.registerUser(username, password, Role.STAFF);
             refreshStaffTable();
@@ -89,13 +95,15 @@ public class AdminController {
         }
     }
 
-
     @FXML
     private void handleDeleteStaff(){
         User selected = staffTable.getSelectionModel().getSelectedItem();
         if (selected != null) {
             userService.deleteUser(selected);
             refreshStaffTable();
+        }
+        else {
+            showAlert("No staff member selected for deletion.");
         }
     }
 
@@ -109,7 +117,10 @@ public class AdminController {
                 prodNameField.setText(newSelection.getName());
                 prodPriceField.setText(String.valueOf(newSelection.getPrice()));
                 prodCategoryField.setValue(newSelection.getCategory());
-                prodVegetarianField.setSelected(newSelection.isVegetarian());
+
+                if (newSelection instanceof Food food)
+                    prodVegetarianField.setSelected(food.isVegetarian());
+                else prodVegetarianField.setSelected(true);
             }
         });
     }
@@ -118,6 +129,11 @@ public class AdminController {
     private void handleAddProduct(){
         try{
             String name = prodNameField.getText();
+            if (name.isEmpty() || prodPriceField.getText().isEmpty() || prodCategoryField.getValue() == null){
+                showAlert("Please fill in all product fields.");
+                return;
+            }
+
             double price = Double.parseDouble(prodPriceField.getText());
             Product.Category category = prodCategoryField.getValue();
             boolean isVegetarian = prodVegetarianField.isSelected();
@@ -133,11 +149,21 @@ public class AdminController {
             productService.addProduct(newProduct);
             refreshMenuTable();
             prodNameField.clear();
-            prodPriceField.clear();
-            prodCategoryField.setValue(null);
-            prodVegetarianField.setSelected(false);
+            handleClearForm();
         } catch (Exception e) {
             showAlert("Error adding product: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void handleDeleteProduct(ActionEvent actionEvent) {
+        Product selected = menuTable.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            productService.deleteProduct(selected);
+            refreshMenuTable();
+            handleClearForm();
+        } else {
+            showAlert("No product selected for deletion.");
         }
     }
 

@@ -1,9 +1,7 @@
 package org.example.Service;
 
-import org.example.Entity.Drink;
-import org.example.Entity.OrderItem;
-import org.example.Entity.Pizza;
-import org.example.Entity.Product;
+import org.example.Entity.*;
+import org.example.Repository.OfferRepository;
 
 import java.util.Comparator;
 import java.util.List;
@@ -11,44 +9,64 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class OfferService {
-    private static boolean happyHourActive = false;
-    private static boolean valentinesDayActive = false;
-    private static boolean freeBeerActive = false;
+    private final OfferRepository offerRepository = new OfferRepository();
 
-    public static boolean isHappyHourActive() {
-        return happyHourActive;
+    private static final String HAPPY_HOUR = "HAPPY_HOUR";
+    private static final String VALENTINES_DAY = "VALENTINES_DAY";
+    private static final String FREE_BEER = "FREE_BEER";
+
+    public OfferService(){
+        if (offerRepository.findByName(HAPPY_HOUR) == null) {
+            offerRepository.save(new Offer(HAPPY_HOUR, false));
+        }
+        if (offerRepository.findByName(VALENTINES_DAY) == null) {
+            offerRepository.save(new Offer(VALENTINES_DAY, false));
+        }
+        if (offerRepository.findByName(FREE_BEER) == null) {
+            offerRepository.save(new Offer(FREE_BEER, false));
+        }
     }
 
-    public static void setHappyHourActive(boolean happyHourActive) {
-        OfferService.happyHourActive = happyHourActive;
+    public boolean isHappyHourActive() {
+        Offer offer = offerRepository.findByName(HAPPY_HOUR);
+        return offer != null && offer.isActive();
     }
 
-    public static boolean isValentinesDayActive() {
-        return valentinesDayActive;
+    public void setHappyHourActive(boolean active) {
+        Offer offer = new Offer(HAPPY_HOUR, active);
+        offerRepository.save(offer);
     }
 
-    public static void setValentinesDayActive(boolean valentinesDayActive) {
-        OfferService.valentinesDayActive = valentinesDayActive;
+    public boolean isValentinesDayActive() {
+        Offer offer = offerRepository.findByName(VALENTINES_DAY);
+        return offer != null && offer.isActive();
     }
 
-    public static boolean isFreeBeerActive() {
-        return freeBeerActive;
+    public void setValentinesDayActive(boolean active) {
+        Offer offer = new Offer(VALENTINES_DAY, active);
+        offerRepository.save(offer);
     }
 
-    public static void setFreeBeerActive(boolean freeBeerActive) {
-        OfferService.freeBeerActive = freeBeerActive;
+    public boolean isFreeBeerActive() {
+        Offer offer = offerRepository.findByName(FREE_BEER);
+        return offer != null && offer.isActive();
+    }
+
+    public void setFreeBeerActive(boolean active) {
+        Offer offer = new Offer(FREE_BEER, active);
+        offerRepository.save(offer);
     }
 
     public double calculateDiscount(List<OrderItem> items){
         double totalDiscount = 0.0;
 
-        if (happyHourActive){
+        if (isHappyHourActive()){
             totalDiscount += calculateHappyHourDiscount(items);
         }
-        if (valentinesDayActive){
+        if (isValentinesDayActive()){
             totalDiscount += calculateValentinesDayDiscount(items);
         }
-        if (freeBeerActive){
+        if (isFreeBeerActive()){
             totalDiscount += calculateFreeBeerDiscount(items);
         }
         return totalDiscount;
@@ -87,13 +105,13 @@ public class OfferService {
 
     public String getActiveOffers(){
         StringBuilder offers = new StringBuilder("Active Offers: ");
-        if (happyHourActive){
+        if (isHappyHourActive()){
             offers.append("[Happy Hour: 20% off on all alcoholic drinks] ");
         }
-        if (valentinesDayActive){
+        if (isValentinesDayActive()){
             offers.append("[Valentine's Day: 10% off on all items] ");
         }
-        if (freeBeerActive){
+        if (isFreeBeerActive()){
             offers.append("[Free Beer with every Pizza ordered] ");
         }
         if (offers.toString().equals("Active Offers: ")){

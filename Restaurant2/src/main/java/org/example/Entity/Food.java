@@ -23,6 +23,7 @@ public class Food extends Product {
     public Food(String name, double price, Category category, int weight, boolean isVegetarian) {
         super(name, price, category, isVegetarian);
         this.weight = new SimpleIntegerProperty(weight);
+        this.isVegetarian = new SimpleBooleanProperty(isVegetarian);
     }
 
     @Column(name = "weight")
