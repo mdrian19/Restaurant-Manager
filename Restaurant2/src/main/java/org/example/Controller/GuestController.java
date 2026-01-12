@@ -9,6 +9,8 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.example.Entity.*;
 import org.example.Service.ProductService;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,9 +52,7 @@ public class GuestController {
 
         productsTable.getColumns().setAll(nameColumn, priceColumn, categoryColumn);
 
-        allProducts = productService.getAllProducts().stream()
-                .filter(p -> !p.getName().equalsIgnoreCase("Bere gratis"))
-                .collect(Collectors.toList());
+        allProducts = new ArrayList<>(productService.getAllProducts());
         updateTable(allProducts);
 
         categoryFilter.setItems(FXCollections.observableArrayList("Toate",
