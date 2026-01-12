@@ -21,148 +21,152 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.Controller.AdminController">
-    <children>
-        <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+<AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.Controller.AdminController">
+    <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+          AnchorPane.topAnchor="0.0">
         <MenuBar>
-            <menus>
-                <Menu text="File">
-                    <items>
-                        <MenuItem text="Export JSON" onAction="#handleExportJson"/>
-                        <MenuItem text="Import JSON" onAction="#handleImportJson"/>
-                    </items>
-                </Menu>
-            </menus>
+            <Menu text="File">
+                <MenuItem text="Export JSON" onAction="#handleExportJson"/>
+                <MenuItem text="Import JSON" onAction="#handleImportJson"/>
+            </Menu>
         </MenuBar>
-        <TabPane VBox.vgrow="ALWAYS" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-            <tabs>
+        <TabPane VBox.vgrow="ALWAYS" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0"
+                 AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <Tab text="Staff management">
+                <VBox spacing="15.0">
+                    <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+                    </padding>
+                    <HBox spacing="10.0" alignment="CENTER_LEFT">
+                        <Label text="New staff:" style="-fx-font-weight: bold;"/>
+                        <TextField fx:id="usernameField" promptText="Username"/>
+                        <PasswordField fx:id="passwordField" promptText="Password"/>
+                        <Button onAction="#handleAddStaff" text="Hire" style="-fx-base: #4CAF50;"/>
+                    </HBox>
 
-                <Tab text="Staff management">
-                    <content>
-                        <VBox spacing="15.0">
-                            <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
-                            <HBox spacing="10.0" alignment="CENTER_LEFT">
-                                <children>
-                                    <Label text="New staff:" style="-fx-font-weight: bold;"/>
-                                    <TextField fx:id="usernameField" promptText="Username" />
-                                    <PasswordField fx:id="passwordField" promptText="Password" />
-                                    <Button onAction="#handleAddStaff" text="Hire" style="-fx-base: #4CAF50;" />
-                                </children>
-                            </HBox>
+                    <Separator/>
 
-                            <Separator />
+                    <TableView fx:id="staffTable" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="staffName" text="User" prefWidth="150.0"/>
+                            <TableColumn fx:id="staffPassword" text="Password" prefWidth="100.0"/>
+                        </columns>
+                        <columnResizePolicy>
+                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                        </columnResizePolicy>
+                    </TableView>
 
-                            <TableView fx:id="staffTable" VBox.vgrow="ALWAYS">
-                                <columns>
-                                    <TableColumn fx:id="staffName" text="User" prefWidth="150.0"/>
-                                    <TableColumn fx:id="staffRole" text="Role" prefWidth="100.0"/>
-                                </columns>
-                                <columnResizePolicy>
-                                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                                </columnResizePolicy>
-                            </TableView>
+                    <Button onAction="#handleDeleteStaff" text="Fire (delete) staff" textFill="RED"/>
+                </VBox>
+            </Tab>
 
-                            <Button onAction="#handleDeleteStaff" text="Fire (delete) staff" textFill="RED" />
+            <Tab text="Menu dashboard">
+                <SplitPane dividerPositions="0.65">
+                    <VBox>
+                        <padding>
+                            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                        </padding>
+                        <TableView fx:id="menuTable" VBox.vgrow="ALWAYS">
+                            <columns>
+                                <TableColumn fx:id="prodName" text="Product"/>
+                                <TableColumn fx:id="prodPrice" text="Price (RON)"/>
+                                <TableColumn fx:id="prodCategory" text="Category"/>
+                            </columns>
+                            <columnResizePolicy>
+                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                            </columnResizePolicy>
+                        </TableView>
+                    </VBox>
+
+                    <VBox spacing="15.0" style="-fx-background-color: #f4f4f4;">
+                        <padding>
+                            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+                        </padding>
+
+                        <Label text="Product details">
+                            <font>
+                                <Font name="System Bold" size="16.0"/>
+                            </font>
+                        </Label>
+                        <Separator/>
+
+                        <VBox spacing="5.0">
+                            <Label text="Name:"/>
+                            <TextField fx:id="prodNameField" promptText="Name..."/>
                         </VBox>
-                    </content>
-                </Tab>
 
-                <Tab text="Menu dashboard">
-                    <content>
-                        <SplitPane dividerPositions="0.65">
-                            <items>
-                                <VBox>
-                                    <padding><Insets bottom="10.0" left="10.0" right="10.0" top="10.0" /></padding>
-                                    <TableView fx:id="menuTable" VBox.vgrow="ALWAYS">
-                                        <columns>
-                                            <TableColumn fx:id="prodName" text="Product" />
-                                            <TableColumn fx:id="prodPrice" text="Price (RON)" />
-                                            <TableColumn fx:id="prodCategory" text="Category" />
-                                        </columns>
-                                        <columnResizePolicy>
-                                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                                        </columnResizePolicy>
-                                    </TableView>
-                                </VBox>
-
-                                <VBox spacing="15.0" style="-fx-background-color: #f4f4f4;">
-                                    <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
-
-                                    <Label text="Product details">
-                                        <font><Font name="System Bold" size="16.0" /></font>
-                                    </Label>
-                                    <Separator />
-
-                                    <VBox spacing="5.0">
-                                        <Label text="Name:" />
-                                        <TextField fx:id="prodNameField" promptText="Name..." />
-                                    </VBox>
-
-                                    <VBox spacing="5.0">
-                                        <Label text="Price:" />
-                                        <TextField fx:id="prodPriceField" promptText="Price..." />
-                                    </VBox>
-
-                                    <VBox spacing="5.0">
-                                        <Label text="Category:" />
-                                        <ComboBox fx:id="prodCategoryField" prefWidth="200.0" promptText="Select..." />
-                                    </VBox>
-
-                                    <CheckBox fx:id="prodVegetarianField" text="Vegetarian?" />
-
-                                    <Separator />
-
-                                    <VBox spacing="10.0">
-                                        <Button onAction="#handleAddProduct" text="Save / Add" maxWidth="Infinity" style="-fx-base: #2196F3; -fx-text-fill: white;"/>
-                                        <Button onAction="#handleDeleteProduct" text="Delete selected item" maxWidth="Infinity" style="-fx-base: #FF5252; -fx-text-fill: white;"/>
-                                        <Button onAction="#handleClearForm" text="Clear form" maxWidth="Infinity" />
-                                    </VBox>
-                                </VBox>
-                            </items>
-                        </SplitPane>
-                    </content>
-                </Tab>
-
-                <Tab text="Offer manager">
-                    <content>
-                        <VBox spacing="20.0">
-                            <padding><Insets bottom="40.0" left="40.0" right="40.0" top="40.0" /></padding>
-                            <Label text="Select active offers:">
-                                <font><Font size="18.0" /></font>
-                            </Label>
-                            <CheckBox fx:id="mealDealCheck" text="Meal Deal (Who buys Pizza, gets the cheapest dessert 25% off)" />
-                            <CheckBox fx:id="partyPackCheck" text="Party Pack (When ordering 4 pizzas, the cheapest one is free)" />
-                            <CheckBox fx:id="happyHourCheck" text="Happy Hour (Every other drink is 50% off)" />
+                        <VBox spacing="5.0">
+                            <Label text="Price:"/>
+                            <TextField fx:id="prodPriceField" promptText="Price..."/>
                         </VBox>
-                    </content>
-                </Tab>
 
-                <Tab text="Orders history">
-                    <content>
-                        <VBox>
-                            <padding><Insets bottom="10.0" left="10.0" right="10.0" top="10.0" /></padding>
-                            <Label text="All orders:">
-                                <font><Font name="System Bold" size="14.0"/></font>
-                                <padding><Insets bottom="10.0"/></padding>
-                            </Label>
-
-                            <TableView fx:id="ordersHistoryTable" VBox.vgrow="ALWAYS">
-                                <columns>
-                                    <TableColumn fx:id="orderId" text="ID" prefWidth="50.0" />
-                                    <TableColumn fx:id="orderDate" text="Data si ora" prefWidth="150.0" />
-                                    <TableColumn fx:id="orderUser" text="Staff" prefWidth="100.0" />
-                                    <TableColumn fx:id="orderTotal" text="Total (RON)" prefWidth="100.0" />
-                                </columns>
-                                <columnResizePolicy>
-                                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                                </columnResizePolicy>
-                            </TableView>
+                        <VBox spacing="5.0">
+                            <Label text="Category:"/>
+                            <ComboBox fx:id="prodCategoryField" prefWidth="200.0" promptText="Select..."/>
                         </VBox>
-                    </content>
-                </Tab>
 
-            </tabs>
+                        <CheckBox fx:id="prodVegetarianField" text="Vegetarian?"/>
+
+                        <Separator/>
+
+                        <VBox spacing="10.0">
+                            <Button onAction="#handleAddProduct" text="Save / Add" maxWidth="Infinity"
+                                    style="-fx-base: #2196F3; -fx-text-fill: white;"/>
+                            <Button onAction="#handleDeleteProduct" text="Delete selected item"
+                                    maxWidth="Infinity" style="-fx-base: #FF5252; -fx-text-fill: white;"/>
+                            <Button onAction="#handleClearForm" text="Clear form" maxWidth="Infinity"/>
+                        </VBox>
+                    </VBox>
+                </SplitPane>
+            </Tab>
+
+            <Tab text="Offer manager">
+                <VBox spacing="20.0">
+                    <padding>
+                        <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
+                    </padding>
+                    <Label text="Select active offers:">
+                        <font>
+                            <Font size="18.0"/>
+                        </font>
+                    </Label>
+                    <CheckBox fx:id="mealDealCheck"
+                              text="Meal Deal (Who buys Pizza, gets the cheapest dessert 25% off)"/>
+                    <CheckBox fx:id="partyPackCheck"
+                              text="Party Pack (When ordering 4 pizzas, the cheapest one is free)"/>
+                    <CheckBox fx:id="happyHourCheck" text="Happy Hour (Every other drink is 50% off)"/>
+                </VBox>
+            </Tab>
+
+            <Tab text="Orders history">
+                <VBox>
+                    <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                    </padding>
+                    <Label text="All orders:">
+                        <font>
+                            <Font name="System Bold" size="14.0"/>
+                        </font>
+                        <padding>
+                            <Insets bottom="10.0"/>
+                        </padding>
+                    </Label>
+
+                    <TableView fx:id="ordersHistoryTable" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="orderId" text="ID" prefWidth="50.0"/>
+                            <TableColumn fx:id="orderDate" text="Data si ora" prefWidth="150.0"/>
+                            <TableColumn fx:id="orderUser" text="Staff" prefWidth="100.0"/>
+                            <TableColumn fx:id="orderTotal" text="Total (RON)" prefWidth="100.0"/>
+                        </columns>
+                        <columnResizePolicy>
+                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                        </columnResizePolicy>
+                    </TableView>
+                </VBox>
+            </Tab>
+
         </TabPane>
-        </VBox>
-    </children>
+    </VBox>
 </AnchorPane>

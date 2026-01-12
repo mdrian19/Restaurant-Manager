@@ -3,6 +3,9 @@ package org.example.Entity;
 import jakarta.persistence.*;
 import javafx.beans.property.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table (name = "users")
 @Access(AccessType.PROPERTY)
@@ -17,6 +20,7 @@ public class User {
     private StringProperty username = new SimpleStringProperty();
     private StringProperty password = new SimpleStringProperty();
     private ObjectProperty<Role> role = new SimpleObjectProperty<>();
+    private List<Order> orders = new ArrayList<>();
 
     public User () {}
 
@@ -47,6 +51,10 @@ public class User {
     public Role getRole() { return role.get(); }
     public void setRole(Role role) { this.role.set(role); }
     public ObjectProperty<Role> roleProperty() { return role; }
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    public List<Order> getOrders() { return orders; }
+    public void setOrders(List<Order> orders) { this.orders = orders; }
 
     @Override
     public String toString() { return getUsername(); }

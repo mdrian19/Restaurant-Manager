@@ -110,7 +110,7 @@ public class GuestController {
     private void showDetails(Product p){
         StringBuilder sb = new StringBuilder();
         sb.append("Nume: ").append(p.getName()).append("\n");
-        sb.append("Preț: ").append(p.getPrice()).append(" RON\n");
+        sb.append("Pret: ").append(p.getPrice()).append(" RON\n");
         sb.append("Categorie: ").append(p.categoryStringProperty().get()).append("\n");
 
         switch (p) {

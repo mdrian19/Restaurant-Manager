@@ -21,7 +21,7 @@ import java.time.format.DateTimeFormatter;
 public class AdminController {
     @FXML private TableView<User> staffTable;
     @FXML private TableColumn<User, String> staffName;
-    @FXML private TableColumn<User, String> staffRole;
+    @FXML private TableColumn<User, String> staffPassword;
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
 
@@ -70,7 +70,7 @@ public class AdminController {
 
     private void setupStaffTable(){
         staffName.setCellValueFactory(cell -> cell.getValue().usernameProperty());
-        staffRole.setCellValueFactory(cell -> cell.getValue().roleProperty().asString());
+        staffPassword.setCellValueFactory(cell -> cell.getValue().passwordProperty());
     }
 
     private void refreshStaffTable(){
@@ -113,6 +113,7 @@ public class AdminController {
             if (response == ButtonType.YES){
                 userService.deleteUser(selected);
                 refreshStaffTable();
+                refreshHistoryTable();
             }
         });
     }
