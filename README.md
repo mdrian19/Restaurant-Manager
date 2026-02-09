@@ -10,4 +10,4 @@ Staff (or waiters) are the ones that make the orders based on guests' requests. 
 
 Admin - the boss of the company. He can add or delete staff and see a general history of all their orders, they can add or delete items from the inventory, they can change active offers and they can import or export items to/from JSON files. He has the most power in this company and handles all information about staff and their password, products and all their specifications, and active offers.
 
-Tbe database is stored in Postgres.
+The database is stored in Postgres.
